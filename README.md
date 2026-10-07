@@ -238,7 +238,7 @@ Project:      Rental Management System (ระบบเช่าบ้าน)
 Course:       Software Analysis
 University:   Kasetsart University
 Team Members: 6710450856 Trai Pringsulaka
-              Name Surname
+              6710451275 Wattanan Jangsuk
               Name Surname
 ```
 
