@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block title %}Find a home{% endblock %}
+{% block content %}
+<h1>Find a home</h1>
+<form class="card" method="get"><div class="row">
+  <div><label>Type</label><select name="property_type"><option value="">Any</option>{% for t in config.PROPERTY_TYPES %}<option {{ 'selected' if args.get('property_type')==t }}>{{ t }}</option>{% endfor %}</select></div>
+  <div><label>Move in</label><input type="date" name="start" value="{{ args.get('start','') }}"></div>
+  <div><label>Until</label><input type="date" name="end" value="{{ args.get('end','') }}"></div></div>
+  <p><button type="submit">Search</button></p></form>
+{% if not searched %}<p class="muted">Enter both dates to see only homes that are free for your whole stay.</p>{% endif %}
+{% if units %}<div class="scroll"><table><tr><th>Property</th><th>Type</th><th>Unit</th><th class="num">Rent / month</th><th></th></tr>
+{% for u in units %}<tr><td>{{ u.property_name }}<br><span class="muted">{{ u.address }}</span></td><td>{{ u.property_type }}</td><td>{{ u.unit_no }}</td><td class="num">{{ u.rent_price|money }}</td>
+<td><a class="btn small" href="{{ url_for('customer.rental_request_new', unit_id=u.unit_id, start_date=args.get('start',''), end_date=args.get('end','')) }}">Request this home</a></td></tr>{% endfor %}</table></div>
+{% else %}<div class="card">No available homes match. Try other dates or another type.</div>{% endif %}
+{% endblock %}

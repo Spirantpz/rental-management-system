@@ -1,0 +1,49 @@
+:root{--bg:#f4f6f9;--card:#fff;--ink:#1f2933;--muted:#6b7785;--line:#dde3ea;--brand:#2f6f5e;--brand2:#245749;--warn:#b7791f;--bad:#c0392b;--ok:#2f855a}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+a{color:var(--brand)}
+header.top{background:var(--brand);color:#fff;display:flex;gap:1rem;align-items:center;padding:.6rem 1.2rem;flex-wrap:wrap}
+header.top .brand{font-weight:700;font-size:1.1rem;color:#fff;text-decoration:none;margin-right:1rem}
+header.top nav{display:flex;gap:.2rem;flex-wrap:wrap;flex:1}
+header.top nav a{color:#e6f2ee;text-decoration:none;padding:.3rem .6rem;border-radius:6px;font-size:.92rem}
+header.top nav a:hover,header.top nav a.on{background:var(--brand2);color:#fff}
+header.top form{margin:0}.who{font-size:.85rem;margin-right:.5rem}
+main{max-width:1100px;margin:1.2rem auto;padding:0 1rem}
+h1{font-size:1.5rem;margin:.2rem 0 1rem}h2{font-size:1.15rem;margin:1.4rem 0 .6rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem;text-decoration:none;color:var(--ink);display:block}
+.stat b{display:block;font-size:1.7rem;color:var(--brand)}.stat span{color:var(--muted);font-size:.88rem}
+.stat.alert b{color:var(--bad)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:.93rem}
+th,td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#eef2f6;font-weight:600;font-size:.85rem;color:#44515f}
+td.num,th.num{text-align:right;white-space:nowrap}
+.scroll{overflow-x:auto}
+label{display:block;font-weight:600;font-size:.9rem;margin:.7rem 0 .2rem}
+input,select,textarea{width:100%;padding:.45rem .6rem;border:1px solid #c5ced8;border-radius:6px;font:inherit;background:#fff}
+input[type=checkbox]{width:auto}
+textarea{min-height:80px}
+.row{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.btn,button{background:var(--brand);color:#fff;border:0;border-radius:6px;padding:.45rem .9rem;font:inherit;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover,button:hover{background:var(--brand2)}
+.btn.sec,button.sec{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+.btn.bad,button.bad{background:var(--bad)}.btn.small,button.small{padding:.2rem .6rem;font-size:.85rem}
+form.inline{display:inline;margin:0}
+.flash{padding:.6rem .9rem;border-radius:6px;margin-bottom:.6rem;border:1px solid}
+.flash.success{background:#e6f6ee;border-color:#9ad3b3}.flash.danger{background:#fdecea;border-color:#f1a9a0}
+.flash.warning{background:#fff6e0;border-color:#ecce82}.flash.info{background:#e8f1fb;border-color:#a9c7ea}
+.badge{display:inline-block;padding:.1rem .55rem;border-radius:999px;font-size:.78rem;background:#e3e8ee;white-space:nowrap}
+.b-paid,.b-verified,.b-approved,.b-completed,.b-resolved,.b-active,.b-ended,.b-available,.b-converted{background:#d5f0e0;color:#1d6b43}
+.b-pending-verification,.b-pending,.b-waiting-for-staff,.b-unpaid,.b-pending-review,.b-under-investigation,.b-move-out-requested,.b-contacted,.b-needs-more-info,.b-awaiting-customer-approval,.b-partially-paid,.b-maintenance,.b-acknowledged,.b-in-progress{background:#fff0c9;color:#8a5a00}
+.b-rejected,.b-amount-due,.b-cancelled,.b-inactive,.b-dismissed{background:#fbdcd8;color:#a1281c}
+.muted{color:var(--muted)}.right{text-align:right}.neg{color:var(--bad);font-weight:600}.pos{color:var(--ok);font-weight:600}
+dl.kv{display:grid;grid-template-columns:max-content 1fr;gap:.25rem 1rem;margin:0}dl.kv dt{color:var(--muted)}dl.kv dd{margin:0}
+.thumbs{display:flex;gap:.6rem;flex-wrap:wrap;margin:.3rem 0}
+.thumbs img{height:70px;border:1px solid var(--line);border-radius:6px}
+.thumbs a.file{padding:.3rem .6rem;border:1px solid var(--line);border-radius:6px;background:#fff;text-decoration:none}
+.filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}
+.login{max-width:380px;margin:3rem auto}
+.receipt{max-width:520px;margin:0 auto}
+.sum{width:auto}.sum td{border:0;padding:.2rem .5rem}.sum tr.total td{border-top:2px solid var(--ink);font-weight:700}
+@media print{header.top,.noprint,.flash{display:none}body{background:#fff}.card{border:0}}

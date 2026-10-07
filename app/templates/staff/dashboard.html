@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Staff dashboard</h1>
+<div class="grid">
+ <a class="stat {{ 'alert' if s.payments }}" href="{{ url_for('staff.payments') }}"><b>{{ s.payments }}</b><span>Payments to verify</span></a>
+ <a class="stat {{ 'alert' if s.requests }}" href="{{ url_for('staff.rental_requests', status='Waiting for Staff') }}"><b>{{ s.requests }}</b><span>New rental requests</span></a>
+ <a class="stat" href="{{ url_for('staff.rental_requests', status='Approved') }}"><b>{{ s.approved }}</b><span>Approved, ready for contract</span></a>
+ <a class="stat" href="{{ url_for('staff.repairs') }}"><b>{{ s.repairs }}</b><span>Open repairs</span></a>
+ <a class="stat" href="{{ url_for('staff.extensions') }}"><b>{{ s.extensions }}</b><span>Extensions to review</span></a>
+ <a class="stat" href="{{ url_for('staff.move_outs') }}"><b>{{ s.moveouts }}</b><span>Move-outs in progress</span></a>
+ <a class="stat" href="{{ url_for('staff.incidents', status='Under Investigation') }}"><b>{{ s.incidents }}</b><span>Incidents under investigation</span></a>
+ <a class="stat {{ 'alert' if s.overdue }}" href="{{ url_for('staff.invoices', show='overdue') }}"><b>{{ s.overdue }}</b><span>Overdue invoices ({{ s.overdue_total|money }} THB)</span></a>
+ <a class="stat" href="{{ url_for('staff.contracts') }}"><b>{{ s.contracts }}</b><span>Active contracts</span></a>
+ <a class="stat" href="{{ url_for('staff.properties') }}"><b>{{ s.units_free }}</b><span>Units free today</span></a>
+</div>
+{% if overdue %}<h2>Overdue invoices</h2><div class="scroll"><table><tr><th>Customer</th><th>Unit</th><th>Period</th><th>Due</th><th class="num">Outstanding</th><th></th></tr>
+{% for i in overdue %}<tr><td>{{ i.customer_name }}</td><td>{{ i.property_name }} {{ i.unit_no }}</td><td>{{ i.period }}</td><td>{{ i.due_date }}</td><td class="num">{{ i.outstanding|money }}</td><td><a href="{{ url_for('staff.invoice_detail', invoice_id=i.invoice_id) }}">Open</a></td></tr>{% endfor %}</table></div>{% endif %}
+{% endblock %}

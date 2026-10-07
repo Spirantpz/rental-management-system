@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% from "_macros.html" import filters %}{% block title %}Invoices{% endblock %}
+{% block content %}
+<h1>Invoices</h1><p><a class="btn" href="{{ url_for('staff.invoice_new') }}">Issue invoice</a></p>
+{{ filters('staff.invoices', show, [('open','Unpaid / partial'), ('overdue','Overdue'), ('all','All')], 'show') }}
+<div class="scroll"><table><tr><th>Period</th><th>Customer</th><th>Home</th><th>Due</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Outstanding</th><th>Status</th><th></th></tr>
+{% for i in invoices %}<tr><td>{{ i.period }}</td><td>{{ i.customer_name }}</td><td>{{ i.property_name }} {{ i.unit_no }}</td><td>{{ i.due_date }}{% if i.overdue %} <span class="badge b-rejected">overdue</span>{% endif %}</td>
+<td class="num">{{ i.total|money }}</td><td class="num">{{ i.paid|money }}</td><td class="num">{{ i.outstanding|money }}</td><td>{{ i.status|badge }}</td><td><a href="{{ url_for('staff.invoice_detail', invoice_id=i.invoice_id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="9" class="muted">No invoices.</td></tr>{% endfor %}</table></div>
+{% endblock %}

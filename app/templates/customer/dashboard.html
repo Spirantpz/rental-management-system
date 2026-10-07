@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block title %}Home{% endblock %}
+{% block content %}
+<h1>Welcome, {{ g.user.display_name }}</h1>
+<div class="grid">
+  <a class="stat {{ 'alert' if outstanding > 0 }}" href="{{ url_for('customer.balance') }}"><b>{{ outstanding|money }}</b><span>Outstanding balance (THB)</span></a>
+  <a class="stat" href="{{ url_for('customer.balance') }}"><b>{{ counts.payments }}</b><span>Payments awaiting verification</span></a>
+  <a class="stat" href="{{ url_for('customer.repairs') }}"><b>{{ counts.repairs }}</b><span>Open repair requests</span></a>
+  <a class="stat" href="{{ url_for('customer.rental_requests') }}"><b>{{ counts.requests }}</b><span>Open rental requests</span></a>
+</div>
+{% if overdue %}<div class="flash danger" style="margin-top:1rem">You have {{ overdue|length }} overdue invoice(s). <a href="{{ url_for('customer.balance') }}">View and pay</a></div>{% endif %}
+<h2>My contracts</h2>
+{% if contracts %}<div class="scroll"><table><tr><th>No.</th><th>Home</th><th>Period</th><th>Status</th><th></th></tr>
+{% for c in contracts %}<tr><td>#{{ c.contract_id }}</td><td>{{ c.property_name }} – {{ c.unit_no }}</td><td>{{ c.start_date }} → {{ c.end_date }}</td><td>{{ c.status|badge }}</td><td><a href="{{ url_for('customer.contract_detail', contract_id=c.contract_id) }}">Open</a></td></tr>{% endfor %}</table></div>
+{% else %}<div class="card">You have no contract yet. <a href="{{ url_for('customer.units') }}">Find a home</a> and send a rental request.</div>{% endif %}
+{% endblock %}

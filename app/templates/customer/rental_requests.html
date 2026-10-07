@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}My requests{% endblock %}
+{% block content %}
+<h1>My rental requests</h1><p><a class="btn" href="{{ url_for('customer.units') }}">New request</a></p>
+{% if requests %}<div class="scroll"><table><tr><th>No.</th><th>Home</th><th>Dates</th><th>Status</th><th>Staff note</th><th></th></tr>
+{% for r in requests %}<tr><td>#{{ r.request_id }}</td><td>{% if r.unit_no %}{{ r.property_name }} – {{ r.unit_no }}{% else %}{{ r.desired_property_type or 'Any type' }}{% endif %}</td>
+<td>{{ r.desired_start_date }} → {{ r.desired_end_date }}</td><td>{{ r.status|badge }}</td><td>{{ r.staff_note or '' }}</td>
+<td>{% if r.status in ('Waiting for Staff','Contacted') %}<form class="inline" method="post" action="{{ url_for('customer.rental_request_cancel', request_id=r.request_id) }}">{{ csrf_input() }}<button class="sec small">Cancel</button></form>{% endif %}</td></tr>{% endfor %}</table></div>
+{% else %}<div class="card">No requests yet.</div>{% endif %}
+{% endblock %}

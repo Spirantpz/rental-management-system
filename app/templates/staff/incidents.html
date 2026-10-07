@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Incidents{% endblock %}
+{% block content %}
+<h1>Incident log</h1><p><a class="btn" href="{{ url_for('staff.incident_new') }}">Record incident</a></p>
+<div class="filters"><a class="btn small {{ '' if not status else 'sec' }}" href="{{ url_for('staff.incidents') }}">All</a>{% for s in statuses %}<a class="btn small {{ '' if status == s else 'sec' }}" href="{{ url_for('staff.incidents', status=s) }}">{{ s }}</a>{% endfor %}</div>
+<div class="scroll"><table><tr><th>No.</th><th>Date</th><th>Customer</th><th>Home</th><th>Description</th><th>Responsible</th><th>Status</th><th></th></tr>
+{% for i in incidents %}<tr><td>#{{ i.incident_id }}</td><td>{{ i.incident_date }}</td><td>{{ i.customer_name }}</td><td>{{ i.property_name }} {{ i.unit_no }}</td><td>{{ i.description }}</td><td>{{ i.staff_name }}</td><td>{{ i.resolution_status|badge }}</td><td><a href="{{ url_for('staff.incident_detail', incident_id=i.incident_id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="8" class="muted">No incidents.</td></tr>{% endfor %}</table></div>
+{% endblock %}

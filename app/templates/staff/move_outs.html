@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Move-outs{% endblock %}
+{% block content %}
+<h1>Move-outs and deposit settlement</h1>
+<div class="scroll"><table><tr><th>No.</th><th>Customer</th><th>Home</th><th>Move-out date</th><th>Request</th><th>Contract</th><th></th></tr>
+{% for m in moveouts %}<tr><td>#{{ m.move_out_id }}</td><td>{{ m.customer_name }}</td><td>{{ m.property_name }} {{ m.unit_no }}</td><td>{{ m.requested_move_out_date }}{% if m.early_notice %} <span class="muted">(early)</span>{% endif %}</td><td>{{ m.status|badge }}</td><td>{{ m.contract_status|badge }}</td><td><a href="{{ url_for('staff.move_out_detail', move_out_id=m.move_out_id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="7" class="muted">No move-out requests.</td></tr>{% endfor %}</table></div>
+{% endblock %}

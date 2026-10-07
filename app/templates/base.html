@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Rental Management{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body>
+<header class="top">
+  <a class="brand" href="{{ url_for('index') }}">Rental Management</a>
+  {% if g.user %}
+  <nav>
+  {% if g.user.role == 'staff' %}
+    {% set nav = [('staff.dashboard','Dashboard'),('staff.rental_requests','Rental Requests'),('staff.contracts','Contracts'),('staff.invoices','Invoices'),('staff.payments','Payments'),('staff.repairs','Repairs'),('staff.extensions','Extensions'),('staff.move_outs','Move-outs'),('staff.incidents','Incidents'),('staff.properties','Properties'),('staff.customers','Customers')] %}
+  {% else %}
+    {% set nav = [('customer.dashboard','Home'),('customer.units','Find a Home'),('customer.rental_requests','My Requests'),('customer.balance','Balance'),('customer.repairs','Repairs'),('customer.extensions','Extensions'),('customer.move_out','Move-out')] %}
+  {% endif %}
+  {% for ep, label in nav %}<a href="{{ url_for(ep) }}" class="{{ 'on' if request.endpoint == ep else '' }}">{{ label }}</a>{% endfor %}
+  </nav>
+  <span class="who">{{ g.user.display_name }} ({{ g.user.role }})</span>
+  <form method="post" action="{{ url_for('auth.logout') }}">{{ csrf_input() }}<button class="sec small" type="submit">Log out</button></form>
+  {% endif %}
+</header>
+<main>
+  {% for category, message in get_flashed_messages(with_categories=true) %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+</body></html>

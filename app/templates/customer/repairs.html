@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block title %}Repairs{% endblock %}
+{% block content %}
+<h1>Repair requests</h1>
+{% if contracts %}<form class="card" method="post" enctype="multipart/form-data">{{ csrf_input() }}<h2 style="margin-top:0">Report a problem</h2>
+ <label>Contract *</label><select name="contract_id">{% for c in contracts %}<option value="{{ c.contract_id }}">#{{ c.contract_id }} – {{ c.property_name }} {{ c.unit_no }}</option>{% endfor %}</select>
+ <label>What is wrong? *</label><textarea name="description" required>{{ form.get('description','') }}</textarea>
+ <label>Photos (optional, JPG/PNG/PDF, max {{ config.MAX_UPLOAD_MB }} MB each)</label><input type="file" name="photos" accept=".jpg,.jpeg,.png,.pdf" multiple>
+ <p><button type="submit">Send repair request</button></p></form>
+{% else %}<div class="card">You need an active contract to report a repair.</div>{% endif %}
+{% if repairs %}<div class="scroll"><table><tr><th>No.</th><th>Home</th><th>Problem</th><th>Date</th><th>Status</th><th></th></tr>
+{% for r in repairs %}<tr><td>#{{ r.repair_id }}</td><td>{{ r.property_name }} {{ r.unit_no }}</td><td>{{ r.description }}</td><td>{{ r.created_date }}</td><td>{{ r.status|badge }}</td><td><a href="{{ url_for('customer.repair_detail', repair_id=r.repair_id) }}">Open</a></td></tr>{% endfor %}</table></div>{% endif %}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% macro file_list(items) %}
+{% if items %}<div class="thumbs">
+{% for a in items %}
+  {% if a.mime_type.startswith('image/') %}<a href="{{ url_for('files.download', attachment_id=a.attachment_id) }}" target="_blank" title="{{ a.original_name }}"><img src="{{ url_for('files.download', attachment_id=a.attachment_id) }}" alt="{{ a.original_name }}"></a>
+  {% else %}<a class="file" href="{{ url_for('files.download', attachment_id=a.attachment_id) }}" target="_blank">{{ a.original_name }}</a>{% endif %}
+{% endfor %}</div>{% else %}<p class="muted">No files attached.</p>{% endif %}
+{% endmacro %}
+
+{% macro field(label, name, value='', type='text', required=False, placeholder='') %}
+<label for="{{ name }}">{{ label }}{% if required %} *{% endif %}</label>
+<input id="{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value if value is not none else '' }}" placeholder="{{ placeholder }}" {{ 'required' if required }} {% if type == 'number' %}step="0.01" min="0"{% endif %}>
+{% endmacro %}
+
+{% macro filters(endpoint, current, options, param='status') %}
+<div class="filters">
+{% for value, label in options %}<a class="btn small {{ '' if current == value else 'sec' }}" href="{{ url_for(endpoint, **{param: value}) }}">{{ label }}</a>{% endfor %}
+</div>
+{% endmacro %}

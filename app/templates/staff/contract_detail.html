@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% block title %}Contract #{{ c.contract_id }}{% endblock %}
+{% block content %}
+<h1>Contract #{{ c.contract_id }} {{ c.status|badge }}</h1>
+<div class="card"><dl class="kv"><dt>Customer</dt><dd><a href="{{ url_for('staff.customer_history', customer_id=c.customer_id) }}">{{ c.customer_name }}</a></dd>
+<dt>Home</dt><dd>{{ c.property_name }} – {{ c.unit_no }}</dd><dt>Period</dt><dd>{{ c.start_date }} → {{ c.end_date }}</dd><dt>Deposit</dt><dd>{{ c.deposit_amount|money }} THB</dd>
+<dt>Signed / started by</dt><dd>{{ c.staff_name }}</dd>
+{% if c.move_out_date %}<dt>Moved out</dt><dd>{{ c.move_out_date }}</dd>{% endif %}
+{% if c.refund_amount is not none %}<dt>Settlement</dt><dd>{% if c.refund_amount >= 0 %}<span class="pos">Refund {{ c.refund_amount|money }}</span>{% else %}<span class="neg">Customer owes {{ (-c.refund_amount)|money }}</span>{% endif %} <span class="muted">{{ c.settlement_note or '' }}</span></dd>{% endif %}</dl>
+<p>
+{% if c.status in ('Active','Move-Out Requested') %}<a class="btn small" href="{{ url_for('staff.invoice_new', contract_id=c.contract_id) }}">Issue invoice</a> <a class="btn small sec" href="{{ url_for('staff.incident_new', contract_id=c.contract_id) }}">Log incident</a>{% endif %}
+{% if c.status == 'Active' %}<form class="inline" method="post" action="{{ url_for('staff.move_out_start', contract_id=c.contract_id) }}">{{ csrf_input() }}<input type="date" name="move_out_date" value="{{ c.end_date }}" style="width:auto"><button class="sec small">Start move-out</button></form>{% endif %}
+{% if open_moveout %}<a class="btn small" href="{{ url_for('staff.move_out_detail', move_out_id=open_moveout.move_out_id) }}">Open move-out #{{ open_moveout.move_out_id }}</a>{% endif %}</p></div>
+<p class="muted">Related records: {{ counts.repairs }} repair(s), {{ counts.extensions }} extension request(s), {{ counts.damages }} damage record(s), {{ counts.incidents }} incident(s). Full list: <a href="{{ url_for('staff.customer_history', customer_id=c.customer_id) }}">tenant history</a>.</p>
+<h2>Invoices</h2>
+<div class="scroll"><table><tr><th>Period</th><th>Due</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Outstanding</th><th>Status</th><th></th></tr>
+{% for i in invoices %}<tr><td>{{ i.period }}</td><td>{{ i.due_date }}</td><td class="num">{{ i.total|money }}</td><td class="num">{{ i.paid|money }}</td><td class="num">{{ i.outstanding|money }}</td><td>{{ i.status|badge }}</td><td><a href="{{ url_for('staff.invoice_detail', invoice_id=i.invoice_id) }}">Open</a></td></tr>{% else %}<tr><td colspan="7" class="muted">No invoices.</td></tr>{% endfor %}</table></div>
+{% endblock %}

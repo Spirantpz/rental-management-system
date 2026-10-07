@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% from "_macros.html" import field %}{% block title %}Customer{% endblock %}
+{% block content %}
+<h1>{{ 'Edit' if c else 'Add' }} customer</h1>
+{% if duplicate %}<div class="flash warning">Existing customer found: <b>{{ duplicate.full_name }}</b> ({{ duplicate.id_card_no }}).
+ <a class="btn small" href="{{ url_for('staff.customer_history', customer_id=duplicate.customer_id) }}">Use existing customer</a></div>{% endif %}
+<form class="card" method="post">{{ csrf_input() }}
+ {{ field('Full name','full_name',form.get('full_name', c.full_name if c else ''),required=True) }}
+ {{ field('ID card number','id_card_no',form.get('id_card_no', c.id_card_no if c else ''),required=True) }}
+ {{ field('Phone','phone',form.get('phone', c.phone if c else '')) }}
+ {{ field('Address','address',form.get('address', c.address if c else '')) }}
+ <h2>Login account {% if account %}<span class="muted">(username: {{ account.username }})</span>{% endif %}</h2>
+ {% if account %}{{ field('Reset password (leave empty to keep)','password','', 'password') }}
+ {% else %}<p class="muted">Optional: create a login so the customer can use the system.</p>{{ field('Username','username',form.get('username','')) }}{{ field('Password (min 6)','password','','password') }}{% endif %}
+ <p><button type="submit">Save</button> <a class="btn sec" href="{{ url_for('staff.customers') }}">Cancel</a></p></form>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Properties{% endblock %}
+{% block content %}
+<h1>Properties</h1><p><a class="btn" href="{{ url_for('staff.property_new') }}">Add property</a></p>
+<div class="scroll"><table><tr><th>Name</th><th>Type</th><th>Address</th><th>Units</th><th></th></tr>
+{% for p in properties %}<tr><td>{{ p.name }}</td><td>{{ p.property_type }}</td><td>{{ p.address }}</td><td>{{ p.unit_count }}</td><td><a href="{{ url_for('staff.property_detail', property_id=p.property_id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="5" class="muted">No properties yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

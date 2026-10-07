@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block title %}New rental request{% endblock %}
+{% block content %}
+<h1>New rental request (on behalf of a customer)</h1>
+<form class="card" method="post">{{ csrf_input() }}
+ <label>Customer *</label><select name="customer_id">{% for c in customers %}<option value="{{ c.customer_id }}" {{ 'selected' if form.get('customer_id')|string == c.customer_id|string }}>{{ c.full_name }} ({{ c.id_card_no }})</option>{% endfor %}</select>
+ <label>Unit (optional)</label><select name="unit_id"><option value="">— decide later —</option>{% for u in units %}<option value="{{ u.unit_id }}">{{ u.property_name }} – {{ u.unit_no }} ({{ u.rent_price|money }})</option>{% endfor %}</select>
+ <div class="row"><div><label>Start *</label><input type="date" name="start_date" value="{{ form.get('start_date','') }}" required></div><div><label>End *</label><input type="date" name="end_date" value="{{ form.get('end_date','') }}" required></div></div>
+ <label>Requirements</label><textarea name="requirements">{{ form.get('requirements','') }}</textarea>
+ <p><button>Create request</button> <a class="btn sec" href="{{ url_for('staff.rental_requests') }}">Cancel</a></p></form>
+<p class="muted">New customer? <a href="{{ url_for('staff.customer_new') }}">Add the customer first</a>.</p>
+{% endblock %}

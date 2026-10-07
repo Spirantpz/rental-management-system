@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% from "_macros.html" import filters %}{% block title %}Repairs{% endblock %}
+{% block content %}
+<h1>Repair requests</h1>
+{{ filters('staff.repairs', status, [('open','Open'), ('Completed','Completed'), ('Cancelled','Cancelled'), ('','All')]) }}
+<div class="scroll"><table><tr><th>No.</th><th>Date</th><th>Customer</th><th>Home</th><th>Problem</th><th>Assigned</th><th>Status</th><th></th></tr>
+{% for r in repairs %}<tr><td>#{{ r.repair_id }}</td><td>{{ r.created_date }}</td><td>{{ r.customer_name }}</td><td>{{ r.property_name }} {{ r.unit_no }}</td><td>{{ r.description }}</td><td>{{ r.staff_name or '—' }}</td><td>{{ r.status|badge }}</td><td><a href="{{ url_for('staff.repair_detail', repair_id=r.repair_id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="8" class="muted">No repair requests.</td></tr>{% endfor %}</table></div>
+{% endblock %}

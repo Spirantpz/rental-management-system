@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "_macros.html" import field %}{% block title %}Unit{% endblock %}
+{% block content %}
+<h1>{{ 'Edit' if u else 'Add' }} unit in {{ p.name }}</h1>
+<form class="card" method="post">{{ csrf_input() }}
+ {{ field('Unit number','unit_no',form.get('unit_no', u.unit_no if u else ''),required=True) }}
+ {{ field('Rent per month (THB)','rent_price',form.get('rent_price', u.rent_price if u else ''),'number',True) }}
+ <label>Status *</label><select name="status">{% set cur = form.get('status', u.status if u else 'available') %}{% for s in statuses %}<option {{ 'selected' if cur==s }}>{{ s }}</option>{% endfor %}</select>
+ <p class="muted">"available" means open for rent. Whether the unit is occupied is worked out from contracts, so a unit can never be double-booked.</p>
+ <p><button type="submit">Save</button> <a class="btn sec" href="{{ url_for('staff.property_detail', property_id=p.property_id) }}">Cancel</a></p></form>
+{% endblock %}

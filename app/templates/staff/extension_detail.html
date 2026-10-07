@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% from "_macros.html" import file_list %}{% block title %}Extension #{{ e.request_id }}{% endblock %}
+{% block content %}
+<h1>Extension request #{{ e.request_id }} {{ e.status|badge }}</h1>
+<div class="card"><dl class="kv"><dt>Customer</dt><dd>{{ e.customer_name }}</dd><dt>Home</dt><dd>{{ e.property_name }} {{ e.unit_no }}</dd><dt>Submitted</dt><dd>{{ e.created_date }}</dd><dt>Scope</dt><dd>{{ e.scope_description }}</dd>
+{% if e.condition_or_reason %}<dt>Reason / conditions</dt><dd>{{ e.condition_or_reason }}</dd>{% endif %}{% if e.staff_name %}<dt>Decided by</dt><dd>{{ e.staff_name }} on {{ e.decision_date }}</dd>{% endif %}</dl>{{ file_list(files) }}</div>
+{% if e.status == 'Pending Review' %}
+<form class="card" method="post" action="{{ url_for('staff.extension_decide', request_id=e.request_id) }}">{{ csrf_input() }}<h2 style="margin-top:0">Decision</h2>
+ <label>Decision *</label><select name="decision"><option>Approved</option><option>Rejected</option><option>Needs More Info</option></select>
+ <label>Reason / conditions (required unless approving without conditions)</label><textarea name="condition_or_reason"></textarea>
+ <p><button>Save decision</button></p></form>{% endif %}
+{% endblock %}

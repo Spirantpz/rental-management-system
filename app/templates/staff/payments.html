@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% from "_macros.html" import filters, file_list %}{% block title %}Payments{% endblock %}
+{% block content %}
+<h1>Payments</h1>
+{{ filters('staff.payments', status, [('Pending Verification','To verify'), ('Verified','Verified'), ('Rejected','Rejected'), ('','All')]) }}
+<div class="scroll"><table><tr><th>No.</th><th>Customer</th><th>Invoice</th><th>Date</th><th class="num">Amount</th><th>Status</th><th>Proof</th><th></th></tr>
+{% for p in payments %}<tr><td>#{{ p.payment_id }}</td><td>{{ p.customer_name }}<br><span class="muted">{{ p.unit_no }}</span></td><td><a href="{{ url_for('staff.invoice_detail', invoice_id=p.invoice_id) }}">{{ p.period }}</a></td><td>{{ p.payment_date }}</td><td class="num">{{ p.amount|money }}</td><td>{{ p.status|badge }}</td><td>{{ file_list(proofs[p.payment_id]) }}</td>
+<td>{% if p.status == 'Pending Verification' %}<form class="inline" method="post" action="{{ url_for('staff.payment_verify', payment_id=p.payment_id) }}">{{ csrf_input() }}<button class="small">Verify</button></form>
+<form method="post" action="{{ url_for('staff.payment_reject', payment_id=p.payment_id) }}" style="margin-top:.3rem">{{ csrf_input() }}<input name="reason" placeholder="Reject reason" required><button class="bad small">Reject</button></form>
+{% elif p.status == 'Verified' %}<a href="{{ url_for('staff.receipt', payment_id=p.payment_id) }}">{{ p.receipt_no }}</a>{% endif %}</td></tr>
+{% else %}<tr><td colspan="8" class="muted">Nothing here.</td></tr>{% endfor %}</table></div>
+{% endblock %}

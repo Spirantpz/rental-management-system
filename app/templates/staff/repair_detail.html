@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% from "_macros.html" import file_list %}{% block title %}Repair #{{ r.repair_id }}{% endblock %}
+{% block content %}
+<h1>Repair #{{ r.repair_id }} {{ r.status|badge }}</h1>
+<div class="card"><dl class="kv"><dt>Customer</dt><dd>{{ r.customer_name }} {{ r.phone }}</dd><dt>Home</dt><dd>{{ r.property_name }} {{ r.unit_no }}</dd><dt>Reported</dt><dd>{{ r.created_date }}</dd><dt>Problem</dt><dd>{{ r.description }}</dd>
+{% if r.completed_date %}<dt>Completed</dt><dd>{{ r.completed_date }}</dd>{% endif %}</dl>{{ file_list(files) }}</div>
+{% if r.status not in ('Completed','Cancelled') %}
+<form class="card" method="post" action="{{ url_for('staff.repair_update', repair_id=r.repair_id) }}" enctype="multipart/form-data">{{ csrf_input() }}<h2 style="margin-top:0">Update job</h2>
+ <div class="row"><div><label>Assigned to</label><select name="assigned_staff_id"><option value="">— nobody yet —</option>{% for s in staff %}<option value="{{ s.staff_id }}" {{ 'selected' if s.staff_id == r.assigned_staff_id }}>{{ s.full_name }} ({{ s.role }})</option>{% endfor %}</select></div>
+ <div><label>Status</label><select name="status">{% for s in statuses %}<option {{ 'selected' if r.status == s }}>{{ s }}</option>{% endfor %}</select></div>
+ <div><label>Cost (estimate or final, THB)</label><input type="number" step="0.01" min="0" name="cost" value="{{ r.cost if r.cost is not none else '' }}"></div></div>
+ <label>Note (shown to the customer)</label><textarea name="staff_note">{{ r.staff_note or '' }}</textarea>
+ <label>Evidence / completion photos</label><input type="file" name="evidence" accept=".jpg,.jpeg,.png,.pdf" multiple>
+ <p class="muted">"Awaiting Customer Approval" asks the customer to approve when cost or time is over what was agreed. "Completed" needs a final cost.</p><p><button>Save</button></p></form>
+{% else %}<div class="card"><dl class="kv"><dt>Assigned to</dt><dd>{{ r.staff_name or '—' }}</dd><dt>Cost</dt><dd>{{ (r.cost or 0)|money }}</dd><dt>Note</dt><dd>{{ r.staff_note or '—' }}</dd></dl></div>{% endif %}
+{% endblock %}

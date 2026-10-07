@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Balance{% endblock %}
+{% block content %}
+<h1>Outstanding balance</h1>
+{% if open_invoices %}<div class="card"><b>Total outstanding: <span class="neg">{{ total|money }} THB</span></b></div>{% else %}<div class="flash success">You have no outstanding balance.</div>{% endif %}
+{% if invoices %}<div class="scroll"><table><tr><th>Period</th><th>Home</th><th>Due date</th><th class="num">Rent</th><th class="num">Water</th><th class="num">Electricity</th><th class="num">Total</th><th class="num">Paid (verified)</th><th class="num">Outstanding</th><th></th></tr>
+{% for i in invoices %}<tr><td>{{ i.period }}</td><td>{{ i.property_name }} {{ i.unit_no }}</td><td>{{ i.due_date }} {% if i.overdue %}<span class="badge b-rejected">overdue</span>{% endif %}</td>
+<td class="num">{{ i.rent_fee|money }}</td><td class="num">{{ i.water_fee|money }}</td><td class="num">{{ i.electric_fee|money }}</td><td class="num">{{ i.total|money }}</td><td class="num">{{ i.paid|money }}</td>
+<td class="num"><b>{{ i.outstanding|money }}</b>{% if i.pending > 0 %}<br><span class="muted">{{ i.pending|money }} awaiting verification</span>{% endif %}</td>
+<td>{% if i.outstanding > 0 %}<a class="btn small" href="{{ url_for('customer.pay', invoice_id=i.invoice_id) }}">Pay</a>{% else %}<a href="{{ url_for('customer.pay', invoice_id=i.invoice_id) }}">View</a>{% endif %}</td></tr>{% endfor %}</table></div>{% endif %}
+{% endblock %}

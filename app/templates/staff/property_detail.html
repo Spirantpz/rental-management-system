@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block title %}{{ p.name }}{% endblock %}
+{% block content %}
+<h1>{{ p.name }}</h1>
+<div class="card"><dl class="kv"><dt>Type</dt><dd>{{ p.property_type }}</dd><dt>Address</dt><dd>{{ p.address }}</dd></dl>
+<p><a class="btn small" href="{{ url_for('staff.property_edit', property_id=p.property_id) }}">Edit</a>
+<form class="inline" method="post" action="{{ url_for('staff.property_delete', property_id=p.property_id) }}" onsubmit="return confirm('Delete this property?')">{{ csrf_input() }}<button class="bad small">Delete</button></form></p></div>
+<h2>Units</h2><p><a class="btn" href="{{ url_for('staff.unit_new', property_id=p.property_id) }}">Add unit</a></p>
+<div class="scroll"><table><tr><th>Unit</th><th class="num">Rent</th><th>Open for rent?</th><th>Occupancy today</th><th></th></tr>
+{% for u in units %}<tr><td>{{ u.unit_no }}</td><td class="num">{{ u.rent_price|money }}</td><td>{{ u.status|badge }}</td>
+<td>{% if u.occupied_by %}Occupied (<a href="{{ url_for('staff.contract_detail', contract_id=u.occupied_by) }}">contract #{{ u.occupied_by }}</a>){% else %}Vacant{% endif %}{% if u.future_contracts %} <span class="muted">+ {{ u.future_contracts }} future contract(s)</span>{% endif %}</td>
+<td><a href="{{ url_for('staff.unit_edit', property_id=p.property_id, unit_id=u.unit_id) }}">Edit</a>
+<form class="inline" method="post" action="{{ url_for('staff.unit_delete', property_id=p.property_id, unit_id=u.unit_id) }}" onsubmit="return confirm('Delete this unit?')">{{ csrf_input() }}<button class="bad small">Delete</button></form></td></tr>
+{% else %}<tr><td colspan="5" class="muted">No units yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% from "_macros.html" import file_list %}{% block title %}Repair #{{ r.repair_id }}{% endblock %}
+{% block content %}
+<h1>Repair #{{ r.repair_id }} {{ r.status|badge }}</h1>
+<div class="card"><dl class="kv"><dt>Home</dt><dd>{{ r.property_name }} {{ r.unit_no }}</dd><dt>Reported</dt><dd>{{ r.created_date }}</dd><dt>Problem</dt><dd>{{ r.description }}</dd>
+<dt>Assigned to</dt><dd>{{ r.staff_name or 'Not assigned yet' }}</dd>{% if r.cost is not none %}<dt>Cost</dt><dd>{{ r.cost|money }} THB</dd>{% endif %}
+{% if r.staff_note %}<dt>Staff note</dt><dd>{{ r.staff_note }}</dd>{% endif %}{% if r.completed_date %}<dt>Completed</dt><dd>{{ r.completed_date }}</dd>{% endif %}</dl>
+{{ file_list(files) }}</div>
+{% if r.status == 'Awaiting Customer Approval' %}<div class="flash warning">Staff need your approval to continue (estimated cost {{ (r.cost or 0)|money }} THB).
+ <form class="inline" method="post" action="{{ url_for('customer.repair_respond', repair_id=r.repair_id) }}">{{ csrf_input() }}<input type="hidden" name="action" value="approve"><button class="small">Approve</button></form>
+ <form class="inline" method="post" action="{{ url_for('customer.repair_respond', repair_id=r.repair_id) }}">{{ csrf_input() }}<input type="hidden" name="action" value="decline"><button class="bad small">Decline</button></form></div>{% endif %}
+{% if r.status not in ('Completed','Cancelled') %}<form class="card" method="post" action="{{ url_for('customer.repair_add_photos', repair_id=r.repair_id) }}" enctype="multipart/form-data">{{ csrf_input() }}
+ <label>Add more photos</label><input type="file" name="photos" accept=".jpg,.jpeg,.png,.pdf" multiple required><p><button class="sec">Upload</button></p></form>{% endif %}
+<p><a href="{{ url_for('customer.repairs') }}">← All repairs</a></p>
+{% endblock %}

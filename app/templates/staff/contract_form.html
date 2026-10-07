@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% from "_macros.html" import field %}{% block title %}New contract{% endblock %}
+{% block content %}
+<h1>Create contract from request #{{ r.request_id }}</h1>
+<div class="card"><b>{{ r.customer_name }}</b> – requested {{ r.desired_start_date }} → {{ r.desired_end_date }}</div>
+<form class="card" method="post">{{ csrf_input() }}<input type="hidden" name="request_id" value="{{ r.request_id }}">
+ <label>Unit * (only units free for the requested dates)</label><select name="unit_id">{% for u in units %}<option value="{{ u.unit_id }}" {{ 'selected' if form.get('unit_id')|string == u.unit_id|string }}>{{ u.property_name }} – {{ u.unit_no }} ({{ u.rent_price|money }} / month)</option>{% endfor %}</select>
+ <div class="row"><div><label>Start *</label><input type="date" name="start_date" value="{{ form.get('start_date','') }}" required></div><div><label>End *</label><input type="date" name="end_date" value="{{ form.get('end_date','') }}" required></div></div>
+ {{ field('Deposit received (THB)','deposit_amount',form.get('deposit_amount',''),'number',True) }}
+ <label><input type="checkbox" name="signed" value="1"> The customer has reviewed and signed the contract, the deposit has been received and the home handed over.</label>
+ <p><button>Start contract</button> <a class="btn sec" href="{{ url_for('staff.rental_request_detail', request_id=r.request_id) }}">Cancel</a></p></form>
+{% endblock %}

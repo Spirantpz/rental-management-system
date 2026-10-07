@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% block title %}Issue invoice{% endblock %}
+{% block content %}
+<h1>Issue invoice</h1>
+<form class="card" method="post">{{ csrf_input() }}
+ <label>Contract *</label><select name="contract_id" id="contract">{% for c in contracts %}<option value="{{ c.contract_id }}" data-rent="{{ c.rent_price }}" {{ 'selected' if form.get('contract_id')|string == c.contract_id|string }}>#{{ c.contract_id }} – {{ c.customer_name }}, {{ c.property_name }} {{ c.unit_no }}</option>{% endfor %}</select>
+ <div class="row"><div><label>Billing period * (YYYY-MM)</label><input name="period" value="{{ form.get('period','') }}" pattern="\d{4}-\d{2}" required></div><div><label>Due date *</label><input type="date" name="due_date" value="{{ form.get('due_date','') }}" required></div></div>
+ <div class="row"><div><label>Rent (THB) *</label><input type="number" step="0.01" min="0" name="rent_fee" id="rent" value="{{ form.get('rent_fee','') }}" required></div>
+ <div><label>Water (THB)</label><input type="number" step="0.01" min="0" name="water_fee" value="{{ form.get('water_fee','0') }}"></div>
+ <div><label>Electricity (THB)</label><input type="number" step="0.01" min="0" name="electric_fee" value="{{ form.get('electric_fee','0') }}"></div></div>
+ <p class="muted">Invoice total = rent + water + electricity.</p>
+ <p><button>Issue invoice</button> <a class="btn sec" href="{{ url_for('staff.invoices') }}">Cancel</a></p></form>
+<script>
+ var sel=document.getElementById('contract'), rent=document.getElementById('rent');
+ function fill(){ if(sel.options.length && !rent.value){ rent.value=sel.options[sel.selectedIndex].dataset.rent; } }
+ sel.addEventListener('change',function(){ rent.value=sel.options[sel.selectedIndex].dataset.rent; }); fill();
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block title %}Contract #{{ c.contract_id }}{% endblock %}
+{% block content %}
+<h1>Contract #{{ c.contract_id }} {{ c.status|badge }}</h1>
+<div class="card"><dl class="kv"><dt>Home</dt><dd>{{ c.property_name }} – {{ c.unit_no }}</dd><dt>Period</dt><dd>{{ c.start_date }} → {{ c.end_date }}</dd>
+<dt>Deposit</dt><dd>{{ c.deposit_amount|money }} THB</dd>
+{% if c.move_out_date %}<dt>Moved out</dt><dd>{{ c.move_out_date }}</dd><dt>Deposit settlement</dt>
+<dd>{% if c.refund_amount >= 0 %}<span class="pos">Refund {{ c.refund_amount|money }} THB</span>{% else %}<span class="neg">You owe {{ (-c.refund_amount)|money }} THB</span>{% endif %}{% if c.settlement_note %} <span class="muted">({{ c.settlement_note }})</span>{% endif %}</dd>{% endif %}</dl></div>
+<h2>Invoices</h2>
+{% if invoices %}<div class="scroll"><table><tr><th>Period</th><th>Due</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Outstanding</th><th>Status</th><th></th></tr>
+{% for i in invoices %}<tr><td>{{ i.period }}</td><td>{{ i.due_date }}</td><td class="num">{{ i.total|money }}</td><td class="num">{{ i.paid|money }}</td><td class="num">{{ i.outstanding|money }}</td><td>{{ i.status|badge }}</td><td><a href="{{ url_for('customer.pay', invoice_id=i.invoice_id) }}">Details / pay</a></td></tr>{% endfor %}</table></div>{% else %}<p class="muted">No invoices yet.</p>{% endif %}
+<h2>Repairs</h2>
+{% for r in repairs %}<p>#{{ r.repair_id }} – {{ r.description }} {{ r.status|badge }} <a href="{{ url_for('customer.repair_detail', repair_id=r.repair_id) }}">Open</a></p>{% else %}<p class="muted">None.</p>{% endfor %}
+<h2>Extension / renovation requests</h2>
+{% for e in extensions %}<p>#{{ e.request_id }} – {{ e.scope_description }} {{ e.status|badge }} <a href="{{ url_for('customer.extension_detail', request_id=e.request_id) }}">Open</a></p>{% else %}<p class="muted">None.</p>{% endfor %}
+{% endblock %}

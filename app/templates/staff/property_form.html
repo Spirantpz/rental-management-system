@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% from "_macros.html" import field %}{% block title %}Property{% endblock %}
+{% block content %}
+<h1>{{ 'Edit' if p else 'Add' }} property</h1>
+<form class="card" method="post">{{ csrf_input() }}
+ {{ field('Name','name',form.get('name', p.name if p else ''),required=True) }}
+ {{ field('Address','address',form.get('address', p.address if p else ''),required=True) }}
+ <label>Type *</label><select name="property_type">{% set cur = form.get('property_type', p.property_type if p else '') %}{% for t in types %}<option {{ 'selected' if cur==t }}>{{ t }}</option>{% endfor %}</select>
+ <p><button type="submit">Save</button> <a class="btn sec" href="{{ url_for('staff.properties') }}">Cancel</a></p></form>
+{% endblock %}

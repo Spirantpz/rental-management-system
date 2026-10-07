@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %}History – {{ c.full_name }}{% endblock %}
+{% block content %}
+<h1>{{ c.full_name }} <a class="btn small sec" href="{{ url_for('staff.customer_edit', customer_id=c.customer_id) }}">Edit</a></h1>
+<div class="card"><dl class="kv"><dt>ID card</dt><dd>{{ c.id_card_no }}</dd><dt>Phone</dt><dd>{{ c.phone }}</dd><dt>Address</dt><dd>{{ c.address }}</dd></dl></div>
+{% if not contracts and not requests %}<div class="flash info">No rental history found for this customer.</div>{% endif %}
+<h2>Contracts</h2>
+<div class="scroll"><table><tr><th>No.</th><th>Home</th><th>Period</th><th>Deposit</th><th>Status</th><th>Move-out</th><th class="num">Refund</th></tr>
+{% for k in contracts %}<tr><td><a href="{{ url_for('staff.contract_detail', contract_id=k.contract_id) }}">#{{ k.contract_id }}</a></td><td>{{ k.property_name }} {{ k.unit_no }}</td><td>{{ k.start_date }} → {{ k.end_date }}</td><td class="num">{{ k.deposit_amount|money }}</td><td>{{ k.status|badge }}</td><td>{{ k.move_out_date or '' }}</td><td class="num">{% if k.refund_amount is not none %}{{ k.refund_amount|money }}{% endif %}</td></tr>{% else %}<tr><td colspan="7" class="muted">No contracts.</td></tr>{% endfor %}</table></div>
+<h2>Invoices & payments</h2>
+<div class="scroll"><table><tr><th>Contract</th><th>Period</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Outstanding</th><th>Status</th></tr>
+{% for i in invoices %}<tr><td>#{{ i.contract_id }}</td><td><a href="{{ url_for('staff.invoice_detail', invoice_id=i.invoice_id) }}">{{ i.period }}</a></td><td class="num">{{ i.total|money }}</td><td class="num">{{ i.paid|money }}</td><td class="num">{{ i.outstanding|money }}</td><td>{{ i.status|badge }}</td></tr>{% else %}<tr><td colspan="6" class="muted">None.</td></tr>{% endfor %}</table></div>
+<p class="muted">{{ payments|length }} payment record(s):
+{% for p in payments %}{{ p.payment_date }} {{ p.amount|money }} ({{ p.status }}){{ ', ' if not loop.last }}{% endfor %}</p>
+<h2>Repairs</h2>{% for r in repairs %}<p>#{{ r.repair_id }} {{ r.created_date }} – {{ r.description }} {{ r.status|badge }}{% if r.cost is not none %} cost {{ r.cost|money }}{% endif %}</p>{% else %}<p class="muted">None.</p>{% endfor %}
+<h2>Extension requests</h2>{% for e in extensions %}<p>#{{ e.request_id }} {{ e.created_date }} – {{ e.scope_description }} {{ e.status|badge }} {{ e.condition_or_reason or '' }}</p>{% else %}<p class="muted">None.</p>{% endfor %}
+<h2>Damage records</h2>{% for d in damages %}<p>{{ d.recorded_date }} – {{ d.description }}: {{ d.deduction_amount|money }}{% if d.is_voided %} <span class="badge b-cancelled">voided</span>{% endif %}</p>{% else %}<p class="muted">None.</p>{% endfor %}
+<h2>Incidents</h2>{% for i in incidents %}<p>{{ i.incident_date }} – <a href="{{ url_for('staff.incident_detail', incident_id=i.incident_id) }}">{{ i.description }}</a> {{ i.resolution_status|badge }}</p>{% else %}<p class="muted">None.</p>{% endfor %}
+<h2>Move-out requests</h2>{% for m in moveouts %}<p>#{{ m.move_out_id }} {{ m.requested_move_out_date }} {{ m.status|badge }}</p>{% else %}<p class="muted">None.</p>{% endfor %}
+<h2>Rental requests</h2>{% for r in requests %}<p>#{{ r.request_id }} {{ r.created_date }} {{ r.desired_start_date }} → {{ r.desired_end_date }} {{ r.status|badge }}</p>{% else %}<p class="muted">None.</p>{% endfor %}
+{% endblock %}

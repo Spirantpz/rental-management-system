@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block title %}Move-out{% endblock %}
+{% block content %}
+<h1>Move-out / do not renew</h1>
+{% if contracts %}<form class="card" method="post">{{ csrf_input() }}
+ <label>Contract *</label><select name="contract_id">{% for c in contracts if c.status == 'Active' %}<option value="{{ c.contract_id }}" {{ 'selected' if needs_confirm and needs_confirm.contract_id == c.contract_id }}>#{{ c.contract_id }} – {{ c.property_name }} {{ c.unit_no }} (ends {{ c.end_date }})</option>{% endfor %}</select>
+ <label>Date you want to move out *</label><input type="date" name="move_out_date" value="{{ form.get('move_out_date','') }}" required>
+ <label>Reason (optional)</label><textarea name="reason">{{ form.get('reason','') }}</textarea>
+ {% if needs_confirm %}<label><input type="checkbox" name="confirm_early" value="1"> I understand that moving out before {{ needs_confirm.end_date }} may involve a fee under my contract.</label>{% endif %}
+ <p><button type="submit">Send move-out notice</button></p></form>{% else %}<div class="card">You have no active contract.</div>{% endif %}
+{% if requests %}<h2>My notices</h2><div class="scroll"><table><tr><th>No.</th><th>Home</th><th>Move-out date</th><th>Status</th><th>Contract</th><th>Settlement</th><th></th></tr>
+{% for m in requests %}<tr><td>#{{ m.move_out_id }}</td><td>{{ m.property_name }} {{ m.unit_no }}</td><td>{{ m.requested_move_out_date }}{% if m.early_notice %} <span class="muted">(early)</span>{% endif %}</td><td>{{ m.status|badge }}</td><td>{{ m.contract_status|badge }}</td>
+<td>{% if m.refund_amount is not none %}{% if m.refund_amount >= 0 %}<span class="pos">Refund {{ m.refund_amount|money }}</span>{% else %}<span class="neg">You owe {{ (-m.refund_amount)|money }}</span>{% endif %}<br><span class="muted">{{ m.settlement_note or '' }}</span>{% endif %}</td>
+<td>{% if m.status == 'Pending' %}<form class="inline" method="post" action="{{ url_for('customer.move_out_cancel', move_out_id=m.move_out_id) }}">{{ csrf_input() }}<button class="sec small">Cancel</button></form>{% endif %}</td></tr>{% endfor %}</table></div>{% endif %}
+{% endblock %}

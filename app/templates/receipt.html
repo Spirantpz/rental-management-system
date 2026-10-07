@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Receipt {{ p.receipt_no }}{% endblock %}
+{% block content %}
+<div class="card receipt"><h1>Payment receipt</h1>
+<dl class="kv"><dt>Receipt no.</dt><dd><b>{{ p.receipt_no }}</b></dd><dt>Customer</dt><dd>{{ p.customer_name }}</dd>
+<dt>Unit</dt><dd>{{ p.property_name }} – {{ p.unit_no }}</dd><dt>Billing period</dt><dd>{{ p.period }}</dd>
+<dt>Payment date</dt><dd>{{ p.payment_date }}</dd><dt>Method</dt><dd>{{ p.payment_method }}</dd>
+<dt>Amount received</dt><dd><b>{{ p.amount|money }}</b> THB</dd><dt>Verified by</dt><dd>{{ p.staff_name }} on {{ p.verified_date }}</dd></dl>
+<p class="noprint"><button onclick="window.print()">Print</button> <a class="btn sec" href="javascript:history.back()">Back</a></p></div>
+{% endblock %}

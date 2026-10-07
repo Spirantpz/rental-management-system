@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% from "_macros.html" import filters %}{% block title %}Rental requests{% endblock %}
+{% block content %}
+<h1>Rental requests</h1><p><a class="btn" href="{{ url_for('staff.rental_request_new') }}">New request for a customer</a></p>
+{{ filters('staff.rental_requests', status, [('', 'All'), ('Waiting for Staff','Waiting'), ('Contacted','Contacted'), ('Approved','Approved'), ('Converted','Converted'), ('Rejected','Rejected')]) }}
+<div class="scroll"><table><tr><th>No.</th><th>Customer</th><th>Home</th><th>Dates</th><th>Status</th><th></th></tr>
+{% for r in requests %}<tr><td>#{{ r.request_id }}</td><td>{{ r.customer_name }}</td><td>{% if r.unit_no %}{{ r.property_name }} {{ r.unit_no }}{% else %}{{ r.desired_property_type or 'Any' }}{% endif %}</td>
+<td>{{ r.desired_start_date }} → {{ r.desired_end_date }}</td><td>{{ r.status|badge }}</td><td><a href="{{ url_for('staff.rental_request_detail', request_id=r.request_id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="6" class="muted">No requests.</td></tr>{% endfor %}</table></div>
+{% endblock %}

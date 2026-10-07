@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% from "_macros.html" import file_list %}{% block title %}Invoice {{ inv.period }}{% endblock %}
+{% block content %}
+<h1>Invoice {{ inv.period }} {{ inv.status|badge }}</h1>
+<div class="card"><table class="sum">
+<tr><td>Rent</td><td class="num">{{ inv.rent_fee|money }}</td></tr><tr><td>Water</td><td class="num">{{ inv.water_fee|money }}</td></tr><tr><td>Electricity</td><td class="num">{{ inv.electric_fee|money }}</td></tr>
+<tr class="total"><td>Invoice total</td><td class="num">{{ inv.total|money }}</td></tr><tr><td>Verified payments</td><td class="num">- {{ inv.paid|money }}</td></tr>
+<tr class="total"><td>Outstanding</td><td class="num">{{ inv.outstanding|money }}</td></tr></table>
+<p class="muted">Due {{ inv.due_date }}. Only payments verified by staff reduce the balance.</p></div>
+{% if inv.outstanding > 0 and inv.contract_status in ('Active','Move-Out Requested') %}
+<h2>Submit payment evidence</h2>
+<form class="card" method="post" enctype="multipart/form-data">{{ csrf_input() }}
+ <div class="row"><div><label>Amount paid (THB) *</label><input type="number" step="0.01" min="0.01" name="amount" value="{{ form.get('amount', inv.outstanding) }}" required></div>
+ <div><label>Payment date *</label><input type="date" name="payment_date" max="{{ today }}" value="{{ form.get('payment_date', today) }}" required></div>
+ <div><label>Method *</label><select name="payment_method">{% for m in methods %}<option {{ 'selected' if form.get('payment_method')==m }}>{{ m }}</option>{% endfor %}</select></div></div>
+ <label>Payment proof * (JPG, PNG or PDF, max {{ config.MAX_UPLOAD_MB }} MB)</label><input type="file" name="proof" accept=".jpg,.jpeg,.png,.pdf" required>
+ <label>Note</label><input name="note" value="{{ form.get('note','') }}">
+ <p><button type="submit">Submit payment</button></p></form>{% endif %}
+<h2>Payment history for this invoice</h2>
+{% if payments %}<div class="scroll"><table><tr><th>Date</th><th class="num">Amount</th><th>Method</th><th>Status</th><th>Proof</th><th></th></tr>
+{% for p in payments %}<tr><td>{{ p.payment_date }}</td><td class="num">{{ p.amount|money }}</td><td>{{ p.payment_method }}</td>
+<td>{{ p.status|badge }}{% if p.reject_reason %}<br><span class="muted">{{ p.reject_reason }}</span>{% endif %}</td><td>{{ file_list(proofs[p.payment_id]) }}</td>
+<td>{% if p.status == 'Verified' %}<a href="{{ url_for('customer.receipt', payment_id=p.payment_id) }}">Receipt {{ p.receipt_no }}</a>{% endif %}</td></tr>{% endfor %}</table></div>{% else %}<p class="muted">No payments yet.</p>{% endif %}
+{% endblock %}

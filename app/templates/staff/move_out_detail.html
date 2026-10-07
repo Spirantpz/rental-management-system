@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% from "_macros.html" import file_list %}{% block title %}Move-out #{{ m.move_out_id }}{% endblock %}
+{% block content %}
+{% set open = m.status in ('Pending','Acknowledged') and c.status == 'Move-Out Requested' %}
+<h1>Move-out #{{ m.move_out_id }} {{ m.status|badge }}</h1>
+<div class="card"><dl class="kv"><dt>Contract</dt><dd><a href="{{ url_for('staff.contract_detail', contract_id=c.contract_id) }}">#{{ c.contract_id }}</a> {{ c.status|badge }} – {{ c.customer_name }}, {{ c.property_name }} {{ c.unit_no }}</dd>
+<dt>Contract ends</dt><dd>{{ c.end_date }}</dd><dt>Requested move-out</dt><dd>{{ m.requested_move_out_date }}{% if m.early_notice %} <span class="badge b-pending">before contract end – check early-termination terms</span>{% endif %}</dd>
+<dt>Reason</dt><dd>{{ m.reason or '—' }}</dd>{% if m.staff_note %}<dt>Staff note</dt><dd>{{ m.staff_note }}</dd>{% endif %}</dl>
+{% if m.status == 'Pending' %}<form method="post" action="{{ url_for('staff.move_out_acknowledge', move_out_id=m.move_out_id) }}" style="margin-top:.6rem">{{ csrf_input() }}<input name="staff_note" placeholder="Note to customer (optional)"><p><button class="sec small">Acknowledge request</button></p></form>{% endif %}</div>
+
+<h2>1. Inspection – damage records</h2>
+<div class="scroll"><table><tr><th>Date</th><th>Description</th><th class="num">Deduction</th><th>Photos</th><th></th></tr>
+{% for d in damages %}<tr><td>{{ d.recorded_date }}</td><td>{{ d.description }}{% if d.is_voided %}<br><span class="muted">Voided: {{ d.void_reason }}</span>{% endif %}</td>
+<td class="num">{% if d.is_voided %}<s>{{ d.deduction_amount|money }}</s>{% else %}{{ d.deduction_amount|money }}{% endif %}</td><td>{{ file_list(damage_files[d.damage_id]) }}</td>
+<td>{% if not d.is_voided and open %}<form class="inline" method="post" action="{{ url_for('staff.damage_void', damage_id=d.damage_id) }}">{{ csrf_input() }}<input name="void_reason" placeholder="Reason" style="width:9rem" required><button class="sec small">Void</button></form>{% endif %}</td></tr>
+{% else %}<tr><td colspan="5" class="muted">No damage recorded.</td></tr>{% endfor %}</table></div>
+{% if open %}<form class="card" method="post" action="{{ url_for('staff.damage_add', move_out_id=m.move_out_id) }}" enctype="multipart/form-data">{{ csrf_input() }}
+ <div class="row"><div><label>Damage description *</label><input name="description" required></div><div><label>Deduction (THB) *</label><input type="number" step="0.01" min="0" name="deduction_amount" required></div></div>
+ <label>Photos</label><input type="file" name="photos" accept=".jpg,.jpeg,.png,.pdf" multiple><p><button class="sec">Add damage record</button></p></form>{% endif %}
+
+<h2>2. Outstanding invoices</h2>
+<div class="scroll"><table><tr><th>Period</th><th class="num">Total</th><th class="num">Verified payments</th><th class="num">Outstanding</th></tr>
+{% for i in invoices %}<tr><td>{{ i.period }}</td><td class="num">{{ i.total|money }}</td><td class="num">{{ i.paid|money }}</td><td class="num">{{ i.outstanding|money }}</td></tr>{% else %}<tr><td colspan="4" class="muted">No invoices.</td></tr>{% endfor %}</table></div>
+{% if pending_payments %}<div class="flash warning">{{ pending_payments }} payment(s) are still waiting for verification. <a href="{{ url_for('staff.payments') }}">Verify them</a> before settling.</div>{% endif %}
+
+<h2>3. Deposit settlement</h2>
+<div class="card"><table class="sum">
+{% if c.refund_amount is not none and c.status in ('Ended','Amount Due') %}
+ <tr><td>Settled on {{ c.move_out_date }}</td><td class="num">{{ c.refund_amount|money }}</td></tr>
+{% else %}
+ <tr><td>Deposit</td><td class="num">{{ s.deposit|money }}</td></tr><tr><td>– Valid deductions (damage)</td><td class="num">{{ s.deductions|money }}</td></tr>
+ <tr><td>– Outstanding financial obligations</td><td class="num">{{ s.outstanding|money }}</td></tr>
+ <tr class="total"><td>{% if s.refund >= 0 %}Refund to customer{% else %}Customer still owes{% endif %}</td><td class="num {{ 'pos' if s.refund >= 0 else 'neg' }}">{{ (s.refund if s.refund >= 0 else s.amount_due)|money }}</td></tr>
+{% endif %}</table>
+{% if c.status == 'Ended' %}<p class="flash success">Contract closed. {{ c.settlement_note or '' }}</p>{% endif %}
+{% if c.status == 'Amount Due' %}<div class="flash warning">Customer owes {{ (-c.refund_amount)|money }} THB. {{ c.settlement_note or '' }}</div>
+ <form method="post" action="{{ url_for('staff.amount_collected', contract_id=c.contract_id) }}">{{ csrf_input() }}<input name="note" placeholder="How was it collected? (optional)"><p><button>Mark amount collected and close contract</button></p></form>{% endif %}
+{% if open %}<form method="post" action="{{ url_for('staff.move_out_finalize', move_out_id=m.move_out_id) }}">{{ csrf_input() }}
+ <div class="row"><div><label>Actual move-out date *</label><input type="date" name="move_out_date" value="{{ m.requested_move_out_date }}" required></div><div><label>Settlement note</label><input name="settlement_note"></div></div>
+ <p><button>Finalize move-out and close contract</button></p></form>{% endif %}</div>
+{% endblock %}

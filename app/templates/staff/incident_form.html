@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}Record incident{% endblock %}
+{% block content %}
+<h1>Record incident</h1>
+<form class="card" method="post" enctype="multipart/form-data">{{ csrf_input() }}
+ <label>Contract *</label><select name="contract_id">{% set cur = form.get('contract_id', contract_id)|string %}{% for c in contracts %}<option value="{{ c.contract_id }}" {{ 'selected' if cur == c.contract_id|string }}>#{{ c.contract_id }} – {{ c.customer_name }}, {{ c.property_name }} {{ c.unit_no }}</option>{% endfor %}</select>
+ <div class="row"><div><label>Incident date *</label><input type="date" name="incident_date" value="{{ form.get('incident_date', today) }}" required></div>
+ <div><label>Responsible staff *</label><select name="responsible_staff_id">{% for s in staff %}<option value="{{ s.staff_id }}" {{ 'selected' if (form.get('responsible_staff_id') or g.user.staff_id)|string == s.staff_id|string }}>{{ s.full_name }}</option>{% endfor %}</select></div>
+ <div><label>Status *</label><select name="resolution_status">{% for s in statuses %}<option {{ 'selected' if form.get('resolution_status') == s }}>{{ s }}</option>{% endfor %}</select></div></div>
+ <label>What happened? *</label><textarea name="description" required>{{ form.get('description','') }}</textarea>
+ <label>Findings / action taken</label><textarea name="resolution_note">{{ form.get('resolution_note','') }}</textarea>
+ <label>Evidence (JPG/PNG/PDF)</label><input type="file" name="evidence" accept=".jpg,.jpeg,.png,.pdf" multiple>
+ <p><button>Save incident</button> <a class="btn sec" href="{{ url_for('staff.incidents') }}">Cancel</a></p></form>
+{% endblock %}

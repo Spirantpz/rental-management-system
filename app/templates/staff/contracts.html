@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% from "_macros.html" import filters %}{% block title %}Contracts{% endblock %}
+{% block content %}
+<h1>Contracts</h1>
+{{ filters('staff.contracts', status, [('', 'All'), ('Active','Active'), ('Move-Out Requested','Move-out requested'), ('Amount Due','Amount due'), ('Ended','Ended')]) }}
+<p class="muted">A contract is created from an approved <a href="{{ url_for('staff.rental_requests', status='Approved') }}">rental request</a>.</p>
+<div class="scroll"><table><tr><th>No.</th><th>Customer</th><th>Home</th><th>Period</th><th class="num">Deposit</th><th>Status</th><th></th></tr>
+{% for c in contracts %}<tr><td>#{{ c.contract_id }}</td><td>{{ c.customer_name }}</td><td>{{ c.property_name }} {{ c.unit_no }}</td><td>{{ c.start_date }} → {{ c.end_date }}</td><td class="num">{{ c.deposit_amount|money }}</td><td>{{ c.status|badge }}</td><td><a href="{{ url_for('staff.contract_detail', contract_id=c.contract_id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="7" class="muted">No contracts.</td></tr>{% endfor %}</table></div>
+{% endblock %}

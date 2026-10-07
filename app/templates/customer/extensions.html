@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block title %}Extension requests{% endblock %}
+{% block content %}
+<h1>Extension / renovation requests</h1>
+{% if contracts %}<form class="card" method="post" enctype="multipart/form-data">{{ csrf_input() }}<h2 style="margin-top:0">New request</h2>
+ <label>Contract *</label><select name="contract_id">{% for c in contracts %}<option value="{{ c.contract_id }}">#{{ c.contract_id }} – {{ c.property_name }} {{ c.unit_no }}</option>{% endfor %}</select>
+ <label>Scope of work *</label><textarea name="scope_description" required>{{ form.get('scope_description','') }}</textarea>
+ <label>Supporting documents or plans * (JPG/PNG/PDF, max {{ config.MAX_UPLOAD_MB }} MB each)</label><input type="file" name="documents" accept=".jpg,.jpeg,.png,.pdf" multiple required>
+ <p><button type="submit">Send for review</button></p></form>{% else %}<div class="card">You need an active contract to send this request.</div>{% endif %}
+{% if extensions %}<div class="scroll"><table><tr><th>No.</th><th>Home</th><th>Scope</th><th>Status</th><th></th></tr>
+{% for e in extensions %}<tr><td>#{{ e.request_id }}</td><td>{{ e.property_name }} {{ e.unit_no }}</td><td>{{ e.scope_description }}</td><td>{{ e.status|badge }}</td><td><a href="{{ url_for('customer.extension_detail', request_id=e.request_id) }}">Open</a></td></tr>{% endfor %}</table></div>{% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% from "_macros.html" import file_list %}{% block title %}Incident #{{ i.incident_id }}{% endblock %}
+{% block content %}
+<h1>Incident #{{ i.incident_id }} {{ i.resolution_status|badge }}</h1>
+<div class="card"><dl class="kv"><dt>Customer</dt><dd><a href="{{ url_for('staff.customer_history', customer_id=i.customer_id) }}">{{ i.customer_name }}</a></dd><dt>Home</dt><dd>{{ i.property_name }} {{ i.unit_no }} (contract #{{ i.contract_id }})</dd>
+<dt>Date</dt><dd>{{ i.incident_date }}</dd><dt>Description</dt><dd>{{ i.description }}</dd><dt>Findings</dt><dd>{{ i.resolution_note or '—' }}</dd></dl>{{ file_list(files) }}</div>
+<form class="card" method="post" action="{{ url_for('staff.incident_update', incident_id=i.incident_id) }}" enctype="multipart/form-data">{{ csrf_input() }}<h2 style="margin-top:0">Update</h2>
+ <div class="row"><div><label>Status</label><select name="resolution_status">{% for s in statuses %}<option {{ 'selected' if i.resolution_status == s }}>{{ s }}</option>{% endfor %}</select></div>
+ <div><label>Responsible staff</label><select name="responsible_staff_id">{% for s in staff %}<option value="{{ s.staff_id }}" {{ 'selected' if s.staff_id == i.responsible_staff_id }}>{{ s.full_name }}</option>{% endfor %}</select></div></div>
+ <label>Findings / action taken</label><textarea name="resolution_note">{{ i.resolution_note or '' }}</textarea>
+ <label>Add evidence</label><input type="file" name="evidence" accept=".jpg,.jpeg,.png,.pdf" multiple><p><button>Save</button></p></form>
+{% endblock %}

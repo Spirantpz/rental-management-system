@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}Request #{{ r.request_id }}{% endblock %}
+{% block content %}
+<h1>Rental request #{{ r.request_id }} {{ r.status|badge }}</h1>
+<div class="card"><dl class="kv"><dt>Customer</dt><dd><a href="{{ url_for('staff.customer_history', customer_id=r.customer_id) }}">{{ r.customer_name }}</a> {{ r.phone }}</dd>
+<dt>Requested</dt><dd>{{ r.created_date }}</dd><dt>Dates</dt><dd>{{ r.desired_start_date }} → {{ r.desired_end_date }}</dd>
+<dt>Wanted</dt><dd>{% if r.unit_no %}{{ r.property_name }} – {{ r.unit_no }} ({{ r.rent_price|money }} THB)
+ {% if free %}<span class="badge b-available">free for these dates</span>{% else %}<span class="badge b-rejected">not available for these dates</span>{% endif %}{% else %}Type: {{ r.desired_property_type or 'Any' }}{% endif %}</dd>
+<dt>Requirements</dt><dd>{{ r.requirements or '—' }}</dd>{% if r.staff_name %}<dt>Handled by</dt><dd>{{ r.staff_name }} ({{ r.handled_date }})</dd>{% endif %}{% if r.staff_note %}<dt>Staff note</dt><dd>{{ r.staff_note }}</dd>{% endif %}</dl></div>
+{% if r.status in ('Waiting for Staff','Contacted','Approved','Rejected') %}
+<form class="card" method="post" action="{{ url_for('staff.rental_request_update', request_id=r.request_id) }}">{{ csrf_input() }}<h2 style="margin-top:0">Update</h2>
+ <div class="row"><div><label>Unit</label><select name="unit_id"><option value="">— none —</option>
+ {% for u in matches %}<option value="{{ u.unit_id }}" {{ 'selected' if u.unit_id == r.unit_id }}>{{ u.property_name }} – {{ u.unit_no }} ({{ u.rent_price|money }})</option>{% endfor %}</select></div>
+ <div><label>Status</label><select name="status">{% for s in ['Contacted','Approved','Rejected'] %}<option {{ 'selected' if r.status == s }}>{{ s }}</option>{% endfor %}</select></div></div>
+ <label>Note</label><textarea name="staff_note">{{ r.staff_note or '' }}</textarea>
+ <p><button>Save</button></p></form>{% endif %}
+{% if r.status == 'Approved' %}<p><a class="btn" href="{{ url_for('staff.contract_new', request_id=r.request_id) }}">Create contract</a></p>{% endif %}
+{% if contract %}<p><a href="{{ url_for('staff.contract_detail', contract_id=contract.contract_id) }}">View contract #{{ contract.contract_id }}</a></p>{% endif %}
+{% endblock %}

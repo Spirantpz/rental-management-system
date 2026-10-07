@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% from "_macros.html" import file_list %}{% block title %}Invoice {{ inv.period }}{% endblock %}
+{% block content %}
+<h1>Invoice {{ inv.period }} – {{ inv.customer_name }} {{ inv.status|badge }}</h1>
+<div class="card"><p>{{ inv.property_name }} {{ inv.unit_no }} · contract <a href="{{ url_for('staff.contract_detail', contract_id=inv.contract_id) }}">#{{ inv.contract_id }}</a> · due {{ inv.due_date }}</p>
+<table class="sum"><tr><td>Rent</td><td class="num">{{ inv.rent_fee|money }}</td></tr><tr><td>Water</td><td class="num">{{ inv.water_fee|money }}</td></tr><tr><td>Electricity</td><td class="num">{{ inv.electric_fee|money }}</td></tr>
+<tr class="total"><td>Invoice total</td><td class="num">{{ inv.total|money }}</td></tr><tr><td>Verified payments</td><td class="num">– {{ inv.paid|money }}</td></tr>
+<tr class="total"><td>Outstanding</td><td class="num">{{ inv.outstanding|money }}</td></tr></table>
+{% if inv.pending > 0 %}<p class="muted">{{ inv.pending|money }} THB submitted but not yet verified (not counted).</p>{% endif %}</div>
+<h2>Payments</h2>
+<div class="scroll"><table><tr><th>No.</th><th>Date</th><th class="num">Amount</th><th>Method</th><th>Status</th><th>Proof</th><th></th></tr>
+{% for p in payments %}<tr><td>#{{ p.payment_id }}</td><td>{{ p.payment_date }}</td><td class="num">{{ p.amount|money }}</td><td>{{ p.payment_method }}<br><span class="muted">{{ p.note or '' }}</span></td>
+<td>{{ p.status|badge }}{% if p.verifier %}<br><span class="muted">by {{ p.verifier }}</span>{% endif %}{% if p.reject_reason %}<br><span class="muted">{{ p.reject_reason }}</span>{% endif %}</td><td>{{ file_list(proofs[p.payment_id]) }}</td>
+<td>{% if p.status == 'Pending Verification' %}
+ <form class="inline" method="post" action="{{ url_for('staff.payment_verify', payment_id=p.payment_id) }}">{{ csrf_input() }}<input type="hidden" name="next" value="{{ url_for('staff.invoice_detail', invoice_id=inv.invoice_id) }}"><button class="small">Verify</button></form>
+ <form method="post" action="{{ url_for('staff.payment_reject', payment_id=p.payment_id) }}" style="margin-top:.3rem">{{ csrf_input() }}<input type="hidden" name="next" value="{{ url_for('staff.invoice_detail', invoice_id=inv.invoice_id) }}"><input name="reason" placeholder="Reject reason" required><button class="bad small">Reject</button></form>
+ {% elif p.status == 'Verified' %}<a href="{{ url_for('staff.receipt', payment_id=p.payment_id) }}">Receipt {{ p.receipt_no }}</a>{% endif %}</td></tr>
+{% else %}<tr><td colspan="7" class="muted">No payments.</td></tr>{% endfor %}</table></div>
+{% if inv.outstanding > 0 %}<h2>Record a payment received directly</h2>
+<form class="card" method="post" action="{{ url_for('staff.record_payment', invoice_id=inv.invoice_id) }}">{{ csrf_input() }}
+ <div class="row"><div><label>Amount *</label><input type="number" step="0.01" min="0.01" name="amount" value="{{ inv.outstanding }}" required></div><div><label>Date *</label><input type="date" name="payment_date" value="{{ today }}" required></div>
+ <div><label>Method</label><select name="payment_method">{% for m in methods %}<option>{{ m }}</option>{% endfor %}</select></div></div>
+ <label>Note</label><input name="note"><p class="muted">Partial amounts are allowed. A receipt is issued immediately.</p><p><button>Record and issue receipt</button></p></form>{% endif %}
+{% endblock %}

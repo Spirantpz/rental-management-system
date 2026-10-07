@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Customers{% endblock %}
+{% block content %}
+<h1>Customers</h1>
+<form class="card" method="get" style="display:flex;gap:.6rem"><input name="q" value="{{ q }}" placeholder="Search name, ID card or phone"><button>Search</button><a class="btn" href="{{ url_for('staff.customer_new') }}">Add customer</a></form>
+<div class="scroll"><table><tr><th>Name</th><th>ID card</th><th>Phone</th><th>Login</th><th></th></tr>
+{% for c in customers %}<tr><td>{{ c.full_name }}</td><td>{{ c.id_card_no }}</td><td>{{ c.phone }}</td><td>{{ c.username or '—' }}</td>
+<td><a href="{{ url_for('staff.customer_history', customer_id=c.customer_id) }}">History</a> · <a href="{{ url_for('staff.customer_edit', customer_id=c.customer_id) }}">Edit</a></td></tr>
+{% else %}<tr><td colspan="5" class="muted">No customers found.</td></tr>{% endfor %}</table></div>
+{% endblock %}
