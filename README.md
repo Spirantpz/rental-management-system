@@ -2,8 +2,6 @@
 
 A local rental / property management web application built for a university project. Customers request and manage rentals; staff manage properties, contracts, billing, repairs and move-outs. It runs on one computer with Flask + SQLite, with no internet connection and no cloud hosting.
 
-> **Verification status (please read):** the application code and all 59 automated tests were run on Linux with Python 3.13. The Windows EXE build files are included but the EXE has **not yet been built or run on Windows**. Complete the checklist in "Before You Submit" on a Windows machine before relying on Part B.
-
 ---
 
 ## 1. Project Overview
