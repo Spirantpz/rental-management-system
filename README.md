@@ -242,11 +242,10 @@ Team Members: 6710450856 Trai Pringsulaka
               6710451143 Phumpat Laorrattanasak
 ```
 
-## Before You Submit
+## Check list
 - [x] On Windows: run `build_exe.bat`; confirm `dist\RentalManagement\RentalManagement.exe` exists.
 - [x] Copy the folder to a Windows PC **without Python**; double-click the EXE; browser opens; log in as `staff1` and `customer1`.
 - [x] Upload a payment slip, verify it as staff, close and reopen the EXE: data is still there.
 - [x] Run `Reset Demo Data.bat`; accounts work afterwards; a `backups\` folder appears.
 - [x] Occupy port 5000 and start the EXE: it uses 5001.
 - [x] If anything above differs from this README, fix the README.
-- [ ] Fill in the project information (section 19).
